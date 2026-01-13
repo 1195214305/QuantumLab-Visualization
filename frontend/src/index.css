@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --quantum-primary: #22c55e;
-  --quantum-secondary: #16a34a;
-  --quantum-accent: #4ade80;
+  --quantum-primary: #6366f1;
+  --quantum-secondary: #4f46e5;
+  --quantum-accent: #818cf8;
 }
 
 * {
@@ -88,7 +88,7 @@ body {
 }
 
 .gate-h {
-  @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/50;
+  @apply bg-indigo-500/20 text-indigo-400 border border-indigo-500/50;
 }
 
 .gate-x {

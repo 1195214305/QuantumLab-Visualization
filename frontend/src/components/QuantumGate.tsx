@@ -9,7 +9,7 @@ interface QuantumGateProps {
 }
 
 const gateColors: Record<string, string> = {
-  H: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/30',
+  H: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/50 hover:bg-indigo-500/30',
   X: 'bg-rose-500/20 text-rose-400 border-rose-500/50 hover:bg-rose-500/30',
   Y: 'bg-amber-500/20 text-amber-400 border-amber-500/50 hover:bg-amber-500/30',
   Z: 'bg-sky-500/20 text-sky-400 border-sky-500/50 hover:bg-sky-500/30',
@@ -17,7 +17,7 @@ const gateColors: Record<string, string> = {
   RY: 'bg-orange-500/20 text-orange-400 border-orange-500/50 hover:bg-orange-500/30',
   CNOT: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50 hover:bg-cyan-500/30',
   S: 'bg-pink-500/20 text-pink-400 border-pink-500/50 hover:bg-pink-500/30',
-  T: 'bg-teal-500/20 text-teal-400 border-teal-500/50 hover:bg-teal-500/30',
+  T: 'bg-purple-500/20 text-purple-400 border-purple-500/50 hover:bg-purple-500/30',
 }
 
 const sizeClasses = {

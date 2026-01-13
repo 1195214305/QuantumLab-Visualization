@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Bot, User, Sparkles, BookOpen, Code, Lightbulb, Trash2 } from 'lucide-react'
+import { Send, Bot, User, Sparkles, BookOpen, Code, Lightbulb, Trash2, Settings, AlertCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { useSettingsStore } from '../store/settings'
 
 interface Message {
   id: string
@@ -141,11 +143,28 @@ circuit += X.on(2, 1)
 \`\`\``
 }
 
+// 量子计算系统提示词
+const SYSTEM_PROMPT = `你是QuantumLab的AI助教，专门帮助用户学习量子计算知识。
+
+你的职责：
+1. 解答量子计算相关问题（量子门、量子电路、量子算法等）
+2. 提供MindQuantum代码示例
+3. 解释量子力学基础概念
+4. 指导用户完成MindQuantum作业
+
+回答要求：
+- 使用简体中文回答
+- 回答要准确、专业但易于理解
+- 适当使用数学公式
+- 提供代码示例时使用MindQuantum框架
+- 保持友好和鼓励的语气`
+
 export default function AI() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { apiKey, apiEndpoint, model } = useSettingsStore()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -154,6 +173,38 @@ export default function AI() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  const callQwenAPI = async (userMessage: string, history: Message[]): Promise<string> => {
+    const messages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...history.slice(-10).map(m => ({
+        role: m.role,
+        content: m.content
+      })),
+      { role: 'user', content: userMessage }
+    ]
+
+    const response = await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: model,
+        messages,
+        max_tokens: 2000,
+        temperature: 0.7,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('API调用失败')
+    }
+
+    const data = await response.json()
+    return data.choices?.[0]?.message?.content || '抱歉，我无法生成回复。'
+  }
 
   const sendMessage = async (content: string) => {
     if (!content.trim()) return
@@ -169,28 +220,20 @@ export default function AI() {
     setInput('')
     setIsLoading(true)
 
-    // 模拟AI响应
-    setTimeout(async () => {
+    try {
       let response = presetResponses[content.trim()]
 
       if (!response) {
-        // 尝试调用边缘函数
-        try {
-          const res = await fetch('/api/ai/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: content.trim() }),
-          })
-
-          if (res.ok) {
-            const data = await res.json()
-            response = data.response
+        // 如果用户配置了API Key，使用通义千问API
+        if (apiKey) {
+          try {
+            response = await callQwenAPI(content.trim(), messages)
+          } catch (error) {
+            console.error('API调用失败:', error)
+            response = generateDefaultResponse(content.trim())
           }
-        } catch {
-          // 边缘函数不可用时使用默认响应
-        }
-
-        if (!response) {
+        } else {
+          // 没有API Key时使用本地知识库
           response = generateDefaultResponse(content.trim())
         }
       }
@@ -203,8 +246,18 @@ export default function AI() {
       }
 
       setMessages(prev => [...prev, assistantMessage])
+    } catch (error) {
+      console.error('发送消息失败:', error)
+      const errorMessage: Message = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: '抱歉，发生了错误。请稍后再试。',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 800)
+    }
   }
 
   const clearChat = () => {
@@ -230,20 +283,47 @@ export default function AI() {
                   量子AI助教
                 </h1>
                 <p className="text-dark-400 text-sm">
-                  基于边缘计算的智能问答系统
+                  {apiKey ? '已连接通义千问API' : '使用本地知识库'}
                 </p>
               </div>
             </div>
-            {messages.length > 0 && (
-              <button
-                onClick={clearChat}
-                className="p-2 rounded-lg text-dark-400 hover:text-dark-200 hover:bg-dark-800 transition-colors"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {messages.length > 0 && (
+                <button
+                  onClick={clearChat}
+                  className="p-2 rounded-lg text-dark-400 hover:text-dark-200 hover:bg-dark-800 transition-colors"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              )}
+            </div>
           </div>
         </motion.div>
+
+        {/* API Key 提示 */}
+        {!apiKey && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center gap-3"
+          >
+            <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-amber-400 text-sm">
+                未配置API Key，AI助手将使用本地预设回答。
+                <Link to="/settings" className="underline ml-1 hover:text-amber-300">
+                  前往设置配置API Key
+                </Link>
+              </p>
+            </div>
+            <Link
+              to="/settings"
+              className="p-2 rounded-lg bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-colors"
+            >
+              <Settings className="w-4 h-4" />
+            </Link>
+          </motion.div>
+        )}
 
         {/* 聊天区域 */}
         <div className="bg-dark-900/80 backdrop-blur rounded-xl border border-dark-800 overflow-hidden">
@@ -414,7 +494,7 @@ function formatMessage(content: string): string {
   return content
     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-dark-100">$1</strong>')
     .replace(/`([^`]+)`/g, '<code class="bg-dark-700 px-1.5 py-0.5 rounded text-violet-400 text-xs">$1</code>')
-    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-dark-700 rounded-lg p-3 mt-2 mb-2 overflow-x-auto text-xs"><code class="text-emerald-400">$2</code></pre>')
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-dark-700 rounded-lg p-3 mt-2 mb-2 overflow-x-auto text-xs"><code class="text-indigo-400">$2</code></pre>')
     .replace(/\n/g, '<br/>')
 }
 
@@ -478,5 +558,7 @@ print(sim.get_qs())
 - 量子算法原理
 - MindQuantum编程
 
-请尝试更具体的问题，或点击上方的快捷问题开始学习。`
+请尝试更具体的问题，或点击上方的快捷问题开始学习。
+
+**提示**：配置通义千问API Key后，可以获得更智能的回答。前往"设置"页面配置。`
 }

@@ -8,6 +8,7 @@ import {
   FlaskConical,
   MessageSquare,
   BookOpen,
+  Settings,
   Menu,
   X,
   Moon,
@@ -87,6 +88,16 @@ export default function Layout({ children }: LayoutProps) {
 
             {/* 右侧按钮 */}
             <div className="flex items-center gap-2">
+              <Link
+                to="/settings"
+                className={`p-2 rounded-lg transition-colors ${
+                  location.pathname === '/settings'
+                    ? 'text-quantum-400 bg-quantum-500/10'
+                    : 'text-dark-400 hover:text-dark-200 hover:bg-dark-800'
+                }`}
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-lg text-dark-400 hover:text-dark-200 hover:bg-dark-800 transition-colors"
@@ -136,6 +147,21 @@ export default function Layout({ children }: LayoutProps) {
                   </Link>
                 )
               })}
+              <Link
+                to="/settings"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
+                  transition-colors duration-200
+                  ${location.pathname === '/settings'
+                    ? 'bg-quantum-500/10 text-quantum-400 border border-quantum-500/20'
+                    : 'text-dark-400 hover:text-dark-200 hover:bg-dark-800'
+                  }
+                `}
+              >
+                <Settings className="w-5 h-5" />
+                设置
+              </Link>
             </nav>
           </motion.div>
         )}

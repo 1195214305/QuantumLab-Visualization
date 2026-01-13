@@ -8,6 +8,7 @@ import Algorithms from './pages/Algorithms'
 import Lab from './pages/Lab'
 import AI from './pages/AI'
 import Homework from './pages/Homework'
+import Settings from './pages/Settings'
 import { useThemeStore } from './store/theme'
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/lab" element={<Lab />} />
           <Route path="/homework" element={<Homework />} />
           <Route path="/ai" element={<AI />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </Layout>
     </BrowserRouter>
