@@ -43,18 +43,21 @@ export default function BlochSphere({
       // 绘制经线
       for (let i = 0; i < 8; i++) {
         const angle = (i / 8) * Math.PI
-        ctx.beginPath()
-        ctx.ellipse(
-          centerX,
-          centerY,
-          radius * Math.cos(angle + rotation),
-          radius,
-          0,
-          0,
-          Math.PI * 2
-        )
-        ctx.strokeStyle = 'rgba(34, 197, 94, 0.15)'
-        ctx.stroke()
+        const radiusX = Math.abs(radius * Math.cos(angle + rotation))
+        if (radiusX > 0.1) {  // 避免绘制过小的椭圆
+          ctx.beginPath()
+          ctx.ellipse(
+            centerX,
+            centerY,
+            radiusX,
+            radius,
+            0,
+            0,
+            Math.PI * 2
+          )
+          ctx.strokeStyle = 'rgba(34, 197, 94, 0.15)'
+          ctx.stroke()
+        }
       }
 
       // 绘制纬线
