@@ -1,0 +1,272 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --quantum-primary: #22c55e;
+  --quantum-secondary: #16a34a;
+  --quantum-accent: #4ade80;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 量子态动画 */
+@keyframes quantum-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes quantum-orbit {
+  from {
+    transform: rotate(0deg) translateX(20px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(20px) rotate(-360deg);
+  }
+}
+
+@keyframes wave-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.quantum-pulse {
+  animation: quantum-pulse 2s ease-in-out infinite;
+}
+
+.quantum-orbit {
+  animation: quantum-orbit 8s linear infinite;
+}
+
+/* 量子电路线条 */
+.circuit-line {
+  stroke-dasharray: 5, 5;
+  animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+/* 量子门样式 */
+.quantum-gate {
+  @apply relative flex items-center justify-center;
+  @apply w-12 h-12 rounded-lg;
+  @apply font-mono font-semibold text-sm;
+  @apply transition-all duration-200;
+  @apply cursor-pointer select-none;
+}
+
+.quantum-gate:hover {
+  @apply scale-110 shadow-lg;
+}
+
+.gate-h {
+  @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/50;
+}
+
+.gate-x {
+  @apply bg-rose-500/20 text-rose-400 border border-rose-500/50;
+}
+
+.gate-y {
+  @apply bg-amber-500/20 text-amber-400 border border-amber-500/50;
+}
+
+.gate-z {
+  @apply bg-sky-500/20 text-sky-400 border border-sky-500/50;
+}
+
+.gate-rz {
+  @apply bg-violet-500/20 text-violet-400 border border-violet-500/50;
+}
+
+.gate-ry {
+  @apply bg-orange-500/20 text-orange-400 border border-orange-500/50;
+}
+
+.gate-cnot {
+  @apply bg-cyan-500/20 text-cyan-400 border border-cyan-500/50;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-500;
+}
+
+/* 代码块样式 */
+.code-block {
+  @apply font-mono text-sm;
+  @apply bg-dark-900 rounded-lg p-4;
+  @apply border border-dark-700;
+  @apply overflow-x-auto;
+}
+
+/* 布洛赫球样式 */
+.bloch-sphere {
+  perspective: 1000px;
+}
+
+.bloch-sphere-inner {
+  transform-style: preserve-3d;
+  animation: rotate-sphere 20s linear infinite;
+}
+
+@keyframes rotate-sphere {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+/* 响应式工具 */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 640px) {
+  .quantum-gate {
+    @apply w-10 h-10 text-xs;
+  }
+
+  /* 移动端导航优化 */
+  .mobile-nav-item {
+    @apply py-3 px-4;
+  }
+
+  /* 移动端卡片间距 */
+  .mobile-card {
+    @apply p-4;
+  }
+
+  /* 移动端字体大小 */
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  /* 移动端表格滚动 */
+  .table-container {
+    @apply overflow-x-auto -mx-4 px-4;
+  }
+}
+
+/* 平板适配 */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-grid {
+    @apply grid-cols-2;
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) {
+  .quantum-gate:hover {
+    @apply scale-100;
+  }
+
+  .quantum-gate:active {
+    @apply scale-95;
+  }
+
+  /* 增大触摸目标 */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* 安全区域适配（刘海屏等） */
+@supports (padding: max(0px)) {
+  .safe-area-inset {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* 暗色模式下的输入框样式 */
+input[type="range"] {
+  @apply accent-quantum-500;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-quantum-500 cursor-pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  @apply w-4 h-4 rounded-full bg-quantum-500 cursor-pointer border-0;
+}
+
+/* 焦点样式优化 */
+:focus-visible {
+  @apply outline-none ring-2 ring-quantum-500/50 ring-offset-2 ring-offset-dark-900;
+}
+
+/* 减少动画（用户偏好） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    @apply bg-white text-black;
+  }
+}
